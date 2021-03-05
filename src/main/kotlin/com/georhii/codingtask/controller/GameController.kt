@@ -3,7 +3,6 @@ package com.georhii.codingtask.controller
 
 import com.georhii.codingtask.objects.Constants
 import com.georhii.codingtask.domain.Game
-import com.georhii.codingtask.domain.GameState
 import com.georhii.codingtask.domain.Player
 import com.georhii.codingtask.service.GameService
 import org.springframework.beans.factory.annotation.Autowired
