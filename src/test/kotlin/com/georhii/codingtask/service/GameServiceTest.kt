@@ -8,6 +8,8 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.http.HttpStatus
+import org.springframework.web.server.ResponseStatusException
 
 @SpringBootTest
 class GameServiceTest {
@@ -68,17 +70,27 @@ class GameServiceTest {
 
     @Test
     fun givenGameIsStarted_WhenPlayerRollsDice_ThenResultIs1to6() {
-        val result = gameService.rollDice(game.id, initialPlayer.id)
+        val result = gameService.rollDice()
         Assertions.assertTrue(result in 1..6)
     }
 
     @Test
     fun givenPlayerRollsDice_WhenMovingToken_ThenTokenMovedOnDiceResult() {
         val initialTokenPosition = initialPlayer.token.position
-        val diceResult = gameService.rollDice(game.id, initialPlayer.id)
+        val diceResult = gameService.makeMove(game.id, initialPlayer.id)
 
         Assertions.assertTrue(diceResult in 1..6)
         Assertions.assertEquals(initialTokenPosition + diceResult,
                 initialPlayer.token.position)
+    }
+
+    @Test
+    fun givenGameIsFinished_ThenPlayerCanNotMove() {
+        game.state = GameState.FINISHED
+        try {
+            gameService.makeMove(game.id, initialPlayer.id)
+        } catch (e: ResponseStatusException) {
+            Assertions.assertTrue(e.status == HttpStatus.FORBIDDEN)
+        }
     }
 }
