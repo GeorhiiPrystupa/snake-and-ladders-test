@@ -43,19 +43,7 @@ class GameController(@Autowired val gameService: GameService) {
 
         gameService.makeMove(gameId, playerId)
 
-        val game = gameService.getGameById(gameId)
-
-        if (game!!.state == GameState.FINISHED) {
-            val playerCookie = Cookie(Constants.PLAYER_ID_COOKIE_NAME, null)
-            playerCookie.maxAge = 0
-            val gameCookie = Cookie(Constants.GAME_ID_COOKIE_NAME, null)
-            gameCookie.maxAge = 0
-
-            response.addCookie(playerCookie)
-            response.addCookie(gameCookie)
-        }
-
-        return game
+        return gameService.getGameById(gameId)!!
     }
 
 }
