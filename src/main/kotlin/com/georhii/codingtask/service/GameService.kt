@@ -48,10 +48,6 @@ class GameService {
         return (1..6).random()
     }
 
-    fun deleteGameById(gameId: String) {
-        games.remove(gameId)
-    }
-
     fun getGameById(gameId: String): Game? {
         return games[gameId]
     }

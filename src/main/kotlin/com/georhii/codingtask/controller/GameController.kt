@@ -53,7 +53,6 @@ class GameController(@Autowired val gameService: GameService) {
 
             response.addCookie(playerCookie)
             response.addCookie(gameCookie)
-            gameService.deleteGameById(gameId)
         }
 
         return game
