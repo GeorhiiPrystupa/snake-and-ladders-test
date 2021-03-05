@@ -27,6 +27,7 @@ class GameControllerTest {
                 .webAppContextSetup(context)
                 .build()
     }
+
     val objectMapper: ObjectMapper by lazy {
         ObjectMapper().registerModule(KotlinModule())
     }
@@ -66,8 +67,6 @@ class GameControllerTest {
                 .cookie(playerCookie, gameCookie)
                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(MockMvcResultMatchers.status().isOk).andReturn().response
-
-
 
         val game = objectMapper.readValue(response.contentAsString, Game::class.java)
 

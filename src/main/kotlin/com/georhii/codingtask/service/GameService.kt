@@ -48,6 +48,14 @@ class GameService {
         return (1..6).random()
     }
 
+    fun deleteGameById(gameId: String) {
+        games.remove(gameId)
+    }
+
+    fun getGameById(gameId: String): Game? {
+        return games[gameId]
+    }
+
     private fun finishGame(gameId: String, winnerId: String) {
         val game = games[gameId]!!
         game.state = GameState.FINISHED

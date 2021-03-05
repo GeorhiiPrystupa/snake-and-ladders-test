@@ -3,9 +3,14 @@ package com.georhii.codingtask.controller
 
 import com.georhii.codingtask.objects.Constants
 import com.georhii.codingtask.domain.Game
+import com.georhii.codingtask.domain.GameState
+import com.georhii.codingtask.domain.Player
 import com.georhii.codingtask.service.GameService
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.server.ResponseStatusException
+import javax.servlet.http.Cookie
 import javax.servlet.http.HttpServletResponse
 
 @RestController
@@ -16,7 +21,14 @@ class GameController(@Autowired val gameService: GameService) {
     fun startGame(@RequestParam("name", defaultValue = "noname") name: String,
                   response: HttpServletResponse): Game {
 
-        return Game()
+        val player = Player(name)
+        val game = gameService.startGame(player)
+        val playerCookie = Cookie(Constants.PLAYER_ID_COOKIE_NAME, player.id)
+        val gameCookie = Cookie(Constants.GAME_ID_COOKIE_NAME, game.id)
+        response.addCookie(playerCookie)
+        response.addCookie(gameCookie)
+
+        return game
     }
 
     @PostMapping(value = ["/move"])
@@ -25,7 +37,26 @@ class GameController(@Autowired val gameService: GameService) {
                   response: HttpServletResponse): Game {
 
 
-        return Game()
+        if (playerId == null || gameId == null) {
+            throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "No cookie")
+        }
+
+        gameService.makeMove(gameId, playerId)
+
+        val game = gameService.getGameById(gameId)
+
+        if (game!!.state == GameState.FINISHED) {
+            val playerCookie = Cookie(Constants.PLAYER_ID_COOKIE_NAME, null)
+            playerCookie.maxAge = 0
+            val gameCookie = Cookie(Constants.GAME_ID_COOKIE_NAME, null)
+            gameCookie.maxAge = 0
+
+            response.addCookie(playerCookie)
+            response.addCookie(gameCookie)
+            gameService.deleteGameById(gameId)
+        }
+
+        return game
     }
 
 }
